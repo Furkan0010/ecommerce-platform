@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- IdentityUser'ı kullanabilmek için. Domain'i mümkün olduğunca temiz
+         tutuyoruz; tek bağımlılık Identity'nin çekirdek soyutlamaları. -->
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="9.0.0" />
+  </ItemGroup>
+
+</Project>
