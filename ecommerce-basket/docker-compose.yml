@@ -1,0 +1,34 @@
+services:
+  basket-redis:
+    image: redis:7
+    container_name: basket-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - basket-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  basket-api:
+    build:
+      context: .
+      dockerfile: src/Basket.Api/Dockerfile
+    container_name: basket-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      Redis__Connection: "basket-redis:6379"
+      # NOT: Tüm servisleri tek compose ile kaldırınca bunlar konteyner adlarına dönecek.
+      Catalog__BaseUrl: "http://host.docker.internal:5002/"
+      Identity__Issuer: "http://host.docker.internal:5001/"
+    ports:
+      - "5003:8080"
+    depends_on:
+      basket-redis:
+        condition: service_healthy
+
+volumes:
+  basket-redis-data:
