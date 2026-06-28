@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- Namespace sabit: ECommerce.Shared.Contracts. İleride bu proje ayrı bir
+         repoya + NuGet paketine taşınacak; isim değişmediği için mesaj sözleşmeleri bozulmaz. -->
+    <RootNamespace>ECommerce.Shared.Contracts</RootNamespace>
+  </PropertyGroup>
+</Project>
