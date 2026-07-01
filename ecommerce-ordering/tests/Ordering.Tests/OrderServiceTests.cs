@@ -17,7 +17,7 @@ public class OrderServiceTests
     {
         var uow = new FakeUnitOfWork();
         var publish = Substitute.For<IPublishEndpoint>();
-        var sut = new OrderService(uow, publish, new CreateOrderRequestValidator());
+        var sut = new OrderService(uow, publish, new CreateOrderRequestValidator(), Substitute.For<IBasketClient>());
 
         var request = new CreateOrderRequest(new List<CreateOrderItem>
         {
@@ -36,7 +36,7 @@ public class OrderServiceTests
     [Fact]
     public async Task CreateOrder_Should_Fail_When_No_Items()
     {
-        var sut = new OrderService(new FakeUnitOfWork(), Substitute.For<IPublishEndpoint>(), new CreateOrderRequestValidator());
+        var sut = new OrderService(new FakeUnitOfWork(), Substitute.For<IPublishEndpoint>(), new CreateOrderRequestValidator(), Substitute.For<IBasketClient>());
 
         var result = await sut.CreateOrderAsync("user-1", new CreateOrderRequest(new List<CreateOrderItem>()));
 
