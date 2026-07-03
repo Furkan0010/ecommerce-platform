@@ -1,0 +1,30 @@
+services:
+  payment-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: payment-db
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Your_password123"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1436:1433"
+    volumes:
+      - payment-db-data:/var/opt/mssql
+
+  payment-api:
+    build:
+      context: .
+      dockerfile: src/Payment.Api/Dockerfile
+    container_name: payment-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ConnectionStrings__PaymentDb: "Server=payment-db,1433;Database=Ecommerce_PaymentDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True"
+      Identity__Issuer: "http://host.docker.internal:5001/"
+    ports:
+      - "5005:8080"
+    depends_on:
+      - payment-db
+
+volumes:
+  payment-db-data:
