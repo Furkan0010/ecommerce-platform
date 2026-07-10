@@ -36,7 +36,7 @@ builder.Services.AddOpenIddict()
         // standart bir imzalı JWT olarak, JWKS üzerinden kolayca doğrulayabilir.
         options.DisableAccessTokenEncryption();
 
-        options.SetAccessTokenLifetime(TimeSpan.FromMinutes(15));
+        options.SetAccessTokenLifetime(TimeSpan.FromMinutes(30));
         options.SetRefreshTokenLifetime(TimeSpan.FromDays(7));
 
         // ASP.NET Core entegrasyonu: token uç noktasını controller'a aç.
