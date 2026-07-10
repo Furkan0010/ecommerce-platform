@@ -1,0 +1,57 @@
+# Platformun ALTYAPISI. Tek komutla kalkar:
+#
+#     docker compose up -d
+#
+# Kapsam bilinçli olarak dar: yalnızca yerelde kurulumu zahmetli olan iki bileşen
+# (Redis ve RabbitMQ) konteynerde çalışır.
+#
+# Konteynerde OLMAYANLAR ve nedenleri:
+#   - Veritabanları  -> Yerel SQL Server kullanılıyor. Servislerin connection
+#                       string'i "Trusted_Connection=True" (Windows kimlik doğrulama)
+#                       olduğu için host'ta çalışmaları gerekiyor.
+#   - API'ler+gateway -> "dotnet run" ile host'ta çalışır; debug/hot-reload kolay olsun diye.
+#
+# Servisleri ayağa kaldırmak (altı ayrı terminal ya da bkz. README):
+#   dotnet run --project ecommerce-identity/src/Identity.Api
+#   dotnet run --project ecommerce-catalog/src/Catalog.Api
+#   dotnet run --project ecommerce-basket/src/Basket.Api
+#   dotnet run --project ecommerce-ordering/src/Ordering.Api
+#   dotnet run --project ecommerce-payment/src/Payment.Api
+#   dotnet run --project ecommerce-gateway/src/Gateway.Api
+
+name: ecommerce
+
+services:
+  # Basket'in sepet deposu. appsettings: Redis:Connection = localhost:6379
+  basket-redis:
+    image: redis:7
+    container_name: basket-redis
+    ports: ["6379:6379"]
+    volumes: [basket-redis-data:/data]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Ordering'in olay veriyolu (MassTransit). appsettings: RabbitMq:Host = localhost
+  # Yönetim arayüzü: http://localhost:15672  (guest / guest)
+  ordering-rabbitmq:
+    image: rabbitmq:3-management
+    container_name: ordering-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"     # AMQP  - uygulamalar buraya bağlanır
+      - "15672:15672"   # Yönetim arayüzü (tarayıcı)
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  basket-redis-data:
